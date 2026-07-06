@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naam Jaap Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .naam-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 3px solid #333;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .naam-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .edit-btn {
+            padding: 8px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .edit-btn:hover {
+            background: #555;
+        }
+
+        .counter-display {
+            text-align: center;
+            padding: 15px;
+            background: #fff3cd;
+            border: 2px solid #333;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        .naam-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 32px;
+            text-align: center;
+            border: 3px solid #333;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #333;
+            background: white;
+            cursor: text;
+            transition: all 0.3s;
+        }
+
+        .naam-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .keyboard-toggle {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .keyboard-toggle:hover {
+            background: #218838;
+        }
+
+        .custom-keyboard {
+            display: block;
+            border: 3px solid #dc3545;
+            border-radius: 10px;
+            padding: 15px;
+            background: #fff;
+            margin-bottom: 15px;
+        }
+
+        .custom-keyboard.hidden {
+            display: none;
+        }
+
+        .keyboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .key-btn {
+            padding: 20px;
+            font-size: 28px;
+            background: #f8f9fa;
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .key-btn:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+
+        .key-btn:active {
+            transform: scale(0.95);
+            background: #dee2e6;
+        }
+
+        .key-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .backspace-btn {
+            grid-column: span 2;
+            background: #ffc107;
+            color: #333;
+        }
+
+        .backspace-btn:hover {
+            background: #ffb300;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .completed {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="naam-display">
+            <span class="naam-text" id="naamDisplay">राधा</span>
+            <button class="edit-btn" id="editBtn">EDIT</button>
+        </div>
+
+        <div class="counter-display">
+            Counter: <span id="counter">0</span>
+        </div>
+
+        <div class="input-container">
+            <input type="text" class="naam-input" id="naamInput" placeholder="यहाँ टाइप करें" readonly>
+        </div>
+
+        <button class="keyboard-toggle" id="keyboardToggle">Hide Keyboard</button>
+
+        <div class="custom-keyboard" id="customKeyboard">
+            <div class="keyboard-grid" id="keyboardGrid">
+                <!-- Keys will be dynamically generated -->
+            </div>
+            <button class="key-btn backspace-btn" id="backspaceBtn">⌫ Backspace</button>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Reset Counter</button>
+    </div>
+
+    <!-- Modal for editing naam -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2>Set Naam</h2>
+            <input type="text" id="naamEditInput" placeholder="नाम दर्ज करें">
+            <div class="modal-buttons">
+                <button class="modal-btn save-btn" id="saveBtn">Save</button>
+                <button class="modal-btn cancel-btn" id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentNaam = localStorage.getItem('naam') || 'राधा';
+        let counter = parseInt(localStorage.getItem('counter')) || 0;
+        let keyboardVisible = true;
+        let isProcessing = false;
+
+        // DOM elements
+        const naamDisplay = document.getElementById('naamDisplay');
+        const naamInput = document.getElementById('naamInput');
+        const counterDisplay = document.getElementById('counter');
+        const editBtn = document.getElementById('editBtn');
+        const editModal = document.getElementById('editModal');
+        const naamEditInput = document.getElementById('naamEditInput');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const keyboardToggle = document.getElementById('keyboardToggle');
+        const customKeyboard = document.getElementById('customKeyboard');
+        const keyboardGrid = document.getElementById('keyboardGrid');
+        const resetBtn = document.getElementById('resetBtn');
+        const backspaceBtn = document.getElementById('backspaceBtn');
+
+        // Initialize
+        function init() {
+            naamDisplay.textContent = currentNaam;
+            counterDisplay.textContent = counter;
+            generateKeyboard();
+        }
+
+        // Generate custom keyboard based on naam
+        function generateKeyboard() {
+            const uniqueChars = [...new Set(currentNaam.split(''))];
+            keyboardGrid.innerHTML = '';
+            
+            uniqueChars.forEach(char => {
+                const btn = document.createElement('button');
+                btn.className = 'key-btn';
+                btn.textContent = char;
+                btn.onclick = () => insertChar(char);
+                keyboardGrid.appendChild(btn);
+            });
+        }
+
+        // Disable/Enable keyboard buttons
+        function setKeyboardEnabled(enabled) {
+            const allKeys = keyboardGrid.querySelectorAll('.key-btn');
+            allKeys.forEach(btn => btn.disabled = !enabled);
+            backspaceBtn.disabled = !enabled;
+        }
+
+        // Insert character into input
+        function insertChar(char) {
+            if (isProcessing) return;
+            naamInput.value += char;
+            checkCompletion();
+        }
+
+        // Backspace function
+        function backspace() {
+            if (isProcessing) return;
+            naamInput.value = naamInput.value.slice(0, -1);
+        }
+
+        // Check if typed text matches naam
+        function checkCompletion() {
+            if (naamInput.value === currentNaam) {
+                isProcessing = true;
+                setKeyboardEnabled(false);
+                
+                counter++;
+                counterDisplay.textContent = counter;
+                localStorage.setItem('counter', counter);
+                
+                // Visual feedback
+                naamInput.style.background = '#d4edda';
+                naamInput.style.borderColor = '#28a745';
+                counterDisplay.style.background = '#d4edda';
+                counterDisplay.classList.add('completed');
+                
+                // Wait 1 second before clearing
+                setTimeout(() => {
+                    naamInput.value = '';
+                    naamInput.style.background = 'white';
+                    naamInput.style.borderColor = '#333';
+                    counterDisplay.style.background = '#fff3cd';
+                    counterDisplay.classList.remove('completed');
+                    isProcessing = false;
+                    setKeyboardEnabled(true);
+                }, 1000);
+            }
+        }
+
+        // Event listeners
+        editBtn.addEventListener('click', () => {
+            naamEditInput.value = currentNaam;
+            editModal.classList.add('active');
+            naamEditInput.focus();
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const newNaam = naamEditInput.value.trim();
+            if (newNaam) {
+                currentNaam = newNaam;
+                naamDisplay.textContent = currentNaam;
+                localStorage.setItem('naam', currentNaam);
+                generateKeyboard();
+                naamInput.value = '';
+            }
+            editModal.classList.remove('active');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            editModal.classList.remove('active');
+        });
+
+        keyboardToggle.addEventListener('click', () => {
+            keyboardVisible = !keyboardVisible;
+            customKeyboard.classList.toggle('hidden');
+            keyboardToggle.textContent = keyboardVisible ? 'Hide Keyboard' : 'Show Keyboard';
+        });
+
+        backspaceBtn.addEventListener('click', backspace);
+
+        resetBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset the counter?')) {
+                counter = 0;
+                counterDisplay.textContent = counter;
+                localStorage.setItem('counter', counter);
+            }
+        });
+
+        // Prevent mobile keyboard on input tap
+        naamInput.addEventListener('focus', (e) => {
+            e.target.blur();
+        });
+
+        naamInput.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
+
+        // Close modal on outside click
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) {
+                editModal.classList.remove('active');
+            }
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
