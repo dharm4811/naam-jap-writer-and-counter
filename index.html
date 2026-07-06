@@ -380,7 +380,7 @@
                 counterDisplay.style.background = '#d4edda';
                 counterDisplay.classList.add('completed');
                 
-                // Wait 1 second before clearing
+                // Wait 0.5 second before clearing
                 setTimeout(() => {
                     naamInput.value = '';
                     naamInput.style.background = 'white';
@@ -389,7 +389,7 @@
                     counterDisplay.classList.remove('completed');
                     isProcessing = false;
                     setKeyboardEnabled(true);
-                }, 1000);
+                }, 500);
             }
         }
 
